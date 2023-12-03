@@ -1,0 +1,16 @@
+{
+    "name": "security-project",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "format": "prettier --write ."
+    },
+    "keywords": [],
+    "author": "Ahmed Khaled",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^3.1.0"
+    }
+}
