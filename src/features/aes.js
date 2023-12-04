@@ -25,12 +25,11 @@ class AES{
         this.algorithmKeyLengths = [128,192,256]
         this.algorithmParts = this.algorithm.split('-')
         this.mode = this.algorithmParts[this.algorithmParts.length-1]
-        this.isValidAlgorithm = this.validateAlgorithm()
         this.keyLength = this.getKeyLength()
     }
     encrypt (callback){
         // do the encryption on the passed file
-        if (!this.isValidAlgorithm){
+        if (!this.validateAlgorithm()){
             console.error(`Not valid algorithm`);
             callback(false);
             return;
@@ -74,7 +73,7 @@ class AES{
     }
     decrypt(callback){
         // do the decryption on the passed file
-        if (!this.isValidAlgorithm){
+        if (!this.validateAlgorithm()){
             console.error(`Not valid algorithm`);
             callback(false);
             return;

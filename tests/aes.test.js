@@ -15,19 +15,19 @@ describe('test key length',()=>{
 describe('test validateAlgorithm', ()=>{
     test('Test #1',()=>{
         const p = new AES('aes-128-ecb',"","","")
-        expect(p.isValidAlgorithm).toBe(true);
+        expect(p.validateAlgorithm()).toBe(true);
     })
     test('Test #2',()=>{
         const p = new AES('aes-256-ecb',"","","")
-        expect(p.isValidAlgorithm).toBe(true);
+        expect(p.validateAlgorithm()).toBe(true);
     })
     test('Test #3',()=>{
         const p = new AES('ase-128-ecb',"","","")
-        expect(p.isValidAlgorithm).toBe(false);
+        expect(p.validateAlgorithm()).toBe(false);
     })
     test('Test #4',()=>{
         const p = new AES('aes-128-ecbd',"","","")
-        expect(p.isValidAlgorithm).toBe(false);
+        expect(p.validateAlgorithm()).toBe(false);
     })
 })
 describe('test encryption function',()=>{
