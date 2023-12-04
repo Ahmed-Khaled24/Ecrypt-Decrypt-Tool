@@ -1,6 +1,7 @@
 const { scrypt, randomFill, createCipheriv } = require('node:crypto');
 const {createReadStream,createWriteStream} = require('node:fs');
-
+const {pipeline,} = require('node:stream');
+const path = require('path');
 class AES{
     /**
      * Creates an instance of AES.
@@ -11,24 +12,67 @@ class AES{
      * @param {*} inFile  path for the file to do operation on it 
      * @param {*} outFile path to save the output of any of the used operation [Dec or Enc]
      * @param {*} keyLength key length that will be extracted from the given algorithm 
+     * @param {*} mode aes mode such as cbc , ecb , ....
      * @memberof AES
      */
     constructor(algorithm, password,inFile,outFile){
-        // 
         this.algorithm = algorithm;
         this.password = password;
-        this.file = inFile;
-        this.outputFile = outFile
+        this.inFile = path.join(path.dirname(__dirname),inFile);
+        this.outFile = path.join(path.dirname(__dirname),outFile);
         this.algorithmKeyLengths = [128,192,256]
         this.isValidAlgorithm = this.validateAlgorithm()
         this.keyLength = this.getKeyLength()
+        this.algorithmParts = this.algorithm.split('-')
+        this.mode = this.algorithmParts[this.algorithmParts.length-1]
     }
-    encrypt (){
+    encrypt (callback){
         // do the encryption on the passed file
-        
+        if (!this.isValidAlgorithm){
+            console.error(`Not valid algorithm`);
+            callback(false);
+            return;
+        }
+        scrypt(this.password, 'salt', this.keyLength, (scryptErr, key) => {
+            if (scryptErr){
+                console.log(`Error during key generation ${scryptErr}`);
+                callback(false);
+                return;
+            }
+            // Then, we'll generate a random initialization vector
+            randomFill(new Uint8Array(16), (randomFillError, iv) => {
+                if (randomFillError){
+                    console.log(`Error during initialize iv ${randomFillError}`);
+                    callback(false);
+                    return;
+                }
+                let cipher;
+                if (this.mode !== 'ecb'){
+                    cipher = createCipheriv(this.algorithm, key, iv);
+                }
+                else{
+                    cipher = createCipheriv(this.algorithm, key, null);
+                }
+          
+                const input = createReadStream(this.inFile);
+                const fileName = path.basename(this.inFile);
+                const output = createWriteStream(this.outFile+fileName+'.enc');
+                pipeline(input, cipher, output, (pipelineError) => {
+                    if (pipelineError){
+                        console.log(`Error during Encryption Process ${pipelineError}`);
+                        callback(false);
+                        return;
+                    }
+                    console.log(`Encryption Process completed successfully!`);
+                    callback(true);
+                    return;
+                });
+            });
+          });
     }
     decrypt(){
         // do the decryption on the passed file
+        return;
     }
     /**
      *  aes-128-cbc: Uses a 128-bit key (16 bytes)

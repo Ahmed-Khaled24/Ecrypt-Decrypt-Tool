@@ -30,3 +30,12 @@ describe('test validateAlgorithm', ()=>{
         expect(p.isValidAlgorithm).toBe(false);
     })
 })
+describe('test encryption function',()=>{
+    test('Test #1',(done)=>{
+        const p = new AES('aes-256-ecb','ahmed elsayed','../data/test.txt','../data/');
+        expect(p.encrypt((result) =>{
+            expect(result).toBe(true);
+            done();
+        }));
+    })
+})
