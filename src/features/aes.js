@@ -1,7 +1,9 @@
-const { scrypt, randomFill, createCipheriv } = require('node:crypto');
+const { scrypt, randomFill, createCipheriv,scryptSync,createDecipheriv } = require('node:crypto');
 const {createReadStream,createWriteStream} = require('node:fs');
 const {pipeline,} = require('node:stream');
 const path = require('path');
+const { Buffer } = require('node:buffer');
+
 class AES{
     /**
      * Creates an instance of AES.
@@ -70,8 +72,45 @@ class AES{
             });
           });
     }
-    decrypt(){
+    decrypt(callback){
         // do the decryption on the passed file
+        if (!this.isValidAlgorithm){
+            console.error(`Not valid algorithm`);
+            callback(false);
+            return;
+        }
+        scrypt(this.password, 'salt', this.keyLength, (scryptErr, key) => {
+            if (scryptErr){
+                console.log(`Error during key generation ${scryptErr}`);
+                callback(false);
+                return;
+            }
+            // Then, we'll generate a random initialization vector
+            
+            const iv = Buffer.alloc(16, 0);
+            let decipher;
+            if (this.mode !== 'ecb'){
+                decipher = createDecipheriv(this.algorithm, key, iv);
+            }
+            else{
+                decipher = createDecipheriv(this.algorithm, key, null);
+            }
+            
+            const input = createReadStream(this.inFile);
+            const fileName = path.basename(this.inFile).split('.enc')[0];
+            const output = createWriteStream(this.outFile+'dec_'+fileName);
+            pipeline(input, decipher, output, (pipelineError) => {
+                if (pipelineError){
+                    console.log(`Error during Decryption Process ${pipelineError}`);
+                    callback(false);
+                    return;
+                }
+                console.log(`Decryption Process completed successfully!`);
+                callback(true);
+                return;
+            });
+        
+          });
         return;
     }
     /**

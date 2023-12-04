@@ -39,3 +39,14 @@ describe('test encryption function',()=>{
         }));
     })
 })
+
+describe('test decryption function',()=>{
+    test('Test #1',(done)=>{
+        const p = new AES('aes-256-ecb','ahmed elsayed','../data/test.txt.enc','../data/');
+        expect(p.decrypt((result) =>{
+            expect(result).toBe(true);
+            done();
+        }));
+    })
+})
+
