@@ -21,10 +21,10 @@ class AES{
         this.inFile = path.join(path.dirname(__dirname),inFile);
         this.outFile = path.join(path.dirname(__dirname),outFile);
         this.algorithmKeyLengths = [128,192,256]
-        this.isValidAlgorithm = this.validateAlgorithm()
-        this.keyLength = this.getKeyLength()
         this.algorithmParts = this.algorithm.split('-')
         this.mode = this.algorithmParts[this.algorithmParts.length-1]
+        this.isValidAlgorithm = this.validateAlgorithm()
+        this.keyLength = this.getKeyLength()
     }
     encrypt (callback){
         // do the encryption on the passed file
@@ -87,11 +87,11 @@ class AES{
      */
     getKeyLength(){
         // helper function to get the length of the key from the given algorithm 
-        const [,num,] = this.algorithm.toLowerCase().split('-');
-        return parseInt(num/8,10)
+        // const [,num,] = this.algorithm.toLowerCase().split('-');
+        return parseInt(this.algorithmParts[1]/8,10)
     }
     validateAlgorithm(){
-        const [aes,num,type] = this.algorithm.toLowerCase().split('-');
+        const [aes,num,type] = this.algorithmParts
         if (aes !== 'aes' || (type !== 'cbc' && type !=='ecb') || !this.algorithmKeyLengths.includes(parseInt(num,10)))
             return false
         return true
