@@ -1,2 +1,3 @@
-## File structure: 
+## File structure:
+
 Figure it out yourself.
