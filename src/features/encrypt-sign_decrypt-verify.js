@@ -13,24 +13,38 @@ const AES = require("./aes");
  * @param {string} targetPath absolute path to the file that will be generated with the result of decryption and singing
  */
 async function encrypt_sign(privateKey, symmetricKey, sourcePath, targetPath) {
-    const fileData = await readFile(sourcePath, "binary");
-    const fileHash = generateHash(fileData);
+    return new Promise(async (resolve, reject) => {
+        const fileData = await readFile(sourcePath, "binary");
+        const fileHash = generateHash(fileData);
 
-    let signature = sign(fileHash, privateKey);
+        let signature = sign(fileHash, privateKey);
 
-    signature = Buffer.concat([
-        Buffer.from("\n#SIGNATURE#", "binary"),
-        signature,
-    ]);
+        signature = Buffer.concat([
+            Buffer.from("\n#SIGNATURE#", "binary"),
+            signature,
+        ]);
 
-    await writeFile(sourcePath, signature, {
-        flag: "a",
-        encoding: "binary",
-    });
+        await writeFile(sourcePath, signature, {
+            flag: "a",
+            encoding: "binary",
+        });
 
-    const aes = new AES("aes-256-ecb", symmetricKey, sourcePath, targetPath);
-    aes.encrypt(async (resultBoolean) => {
-        resultBoolean && console.log("Your file has been signed and encrypted");
+        const aes = new AES(
+            "aes-256-ecb",
+            symmetricKey,
+            sourcePath,
+            targetPath,
+        );
+
+        aes.encrypt(async (resultBoolean) => {
+            if (resultBoolean) {
+                console.log("Your file has been signed and encrypted");
+                await cleanup(sourcePath);
+                resolve(true);
+            } else {
+                reject();
+            }
+        });
     });
 }
 
@@ -41,58 +55,51 @@ async function encrypt_sign(privateKey, symmetricKey, sourcePath, targetPath) {
  * @param {string} targetPath absolute path to the file that will be generated with the result of decryption
  */
 async function decrypt_verify(publicKey, symmetricKey, sourcePath, targetPath) {
-    const aes = new AES("aes-256-ecb", symmetricKey, sourcePath, targetPath);
-    aes.decrypt(async (resultBoolean) => {
-        console.log(
-            resultBoolean
-                ? "Your file has been decrypted"
-                : "The code has been exploded",
+    return new Promise((resolve, reject) => {
+        const aes = new AES(
+            "aes-256-ecb",
+            symmetricKey,
+            sourcePath,
+            targetPath,
         );
+        aes.decrypt(async (resultBoolean) => {
+            console.log(
+                resultBoolean
+                    ? "Your file has been decrypted"
+                    : reject("The code has been exploded"),
+            );
 
-        const fileData = await readFile(targetPath, "binary");
-        let [actualData, signature] = fileData.split("\n#SIGNATURE#");
+            const fileData = await readFile(targetPath, "binary");
+            let [actualData, signature] = fileData.split("\n#SIGNATURE#");
 
-        const fileHash = generateHash(actualData);
+            const fileHash = generateHash(actualData);
 
-        const validSignature = verify(fileHash, publicKey, signature);
+            const validSignature = verify(fileHash, publicKey, signature);
 
-        if (validSignature) {
-            console.log("Your file signature is valid.");
-            await writeFile(targetPath, actualData, { flag: "w" });
-        } else {
-            console.log("Your file signature is invalid.");
-        }
+            if (validSignature) {
+                console.log("Your file signature is valid.");
+                await writeFile(targetPath, actualData, { flag: "w" });
+                resolve(true);
+            } else {
+                reject("Your file signature is invalid.");
+            }
+        });
     });
 }
 
-(async () => {
-    const privateKey = readFileSync(
-        join(__dirname, "./default-keys/private.pem"),
-        "utf-8",
-    );
-    const publicKey = readFileSync(
-        join(__dirname, "./default-keys/public.pem"),
-        "utf-8",
-    );
+/**
+ * helper function to clean up the original file from the signature
+ * @param {string} filePath absolute path
+ * @returns
+ */
+async function cleanup(filePath) {
+    const fileData = await readFile(filePath, "binary");
+    let [actualData, signature] = fileData.split("\n#SIGNATURE#");
+    await writeFile(filePath, actualData);
+    return true;
+}
 
-    const symmetricKey = "I am very strong";
-
-    await encrypt_sign(
-        privateKey,
-        symmetricKey,
-        join(__dirname, "test.txt"),
-        join(__dirname, "test-encrypted.txt"),
-        publicKey,
-    );
-
-    await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
-    });
-
-    await decrypt_verify(
-        publicKey,
-        symmetricKey,
-        join(__dirname, "test-encrypted.txt"),
-        join(__dirname, "test-decrypted.txt"),
-    );
-})();
+module.exports = {
+    encrypt_sign,
+    decrypt_verify,
+};
