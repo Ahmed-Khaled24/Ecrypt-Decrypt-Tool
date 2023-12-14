@@ -22,7 +22,7 @@ function verify(data, publicKey, signature) {
     const verifier = createVerify("RSA-SHA256");
     verifier.update(data);
     verifier.end();
-    return verifier.verify(publicKey, signature);
+    return verifier.verify(publicKey, signature, "binary");
 }
 
 module.exports = { sign, verify };
