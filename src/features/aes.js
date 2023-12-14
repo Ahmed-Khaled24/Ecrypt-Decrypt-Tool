@@ -62,10 +62,7 @@ class AES {
                 }
 
                 const input = createReadStream(this.inFile);
-                const fileName = path.basename(this.inFile);
-                const output = createWriteStream(
-                    this.outFile + fileName + ".enc",
-                );
+                const output = createWriteStream(this.outFile);
                 pipeline(input, cipher, output, (pipelineError) => {
                     if (pipelineError) {
                         console.log(
@@ -105,8 +102,7 @@ class AES {
             }
 
             const input = createReadStream(this.inFile);
-            const fileName = path.basename(this.inFile).split(".enc")[0];
-            const output = createWriteStream(this.outFile + "dec_" + fileName);
+            const output = createWriteStream(this.outFile);
             pipeline(input, decipher, output, (pipelineError) => {
                 if (pipelineError) {
                     console.log(
