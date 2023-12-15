@@ -36,14 +36,12 @@ describe("test encryption function", () => {
             "aes-256-ecb",
             "ahmed elsayed",
             path.join(__dirname, "../data/test.txt"),
-            path.join(__dirname, "../data/"),
+            path.join(__dirname, "../data/test.enc.txt"),
         );
-        expect(
-            p.encrypt((result) => {
-                expect(result).toBe(true);
-                done();
-            }),
-        );
+        p.encrypt((result) => {
+            expect(result).toBe(true);
+            done()
+        });
     });
 });
 
@@ -52,14 +50,12 @@ describe("test decryption function", () => {
         const p = new AES(
             "aes-256-ecb",
             "ahmed elsayed",
-            path.join(__dirname, "../data/test.txt.enc"),
-            path.join(__dirname, "../data/"),
+            path.join(__dirname, "../data/test.enc.txt"),
+            path.join(__dirname, "../data/text.dec.txt"),
         );
-        expect(
-            p.decrypt((result) => {
-                expect(result).toBe(true);
-                done();
-            }),
-        );
+        p.decrypt((result) => {
+            expect(result).toBe(true);
+            done()
+        });
     });
 });
