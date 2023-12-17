@@ -6,7 +6,7 @@ const {
 } = require("node:crypto");
 const { createReadStream, createWriteStream } = require("node:fs");
 const { pipeline } = require("node:stream");
-const path = require("path");
+const { join, parse } = require("path");
 const { Buffer } = require("node:buffer");
 
 class AES {
@@ -17,16 +17,14 @@ class AES {
        aes-256-cbc       aes-256-ecb
      * @param {string} password password used to generate key
      * @param {string} inFile  absolute path for the file to do operation on it 
-     * @param {string} outFile absolute path to save the output of any of the used operation [Dec or Enc]
      * @param {*} keyLength key length that will be extracted from the given algorithm 
      * @param {*} mode aes mode such as cbc , ecb , ....
      * @memberof AES
      */
-    constructor(algorithm, password, inFile, outFile) {
+    constructor(algorithm, password, inFile) {
         this.algorithm = algorithm;
         this.password = password;
         this.inFile = inFile;
-        this.outFile = outFile;
         this.algorithmKeyLengths = [128, 192, 256];
         this.algorithmParts = this.algorithm.split("-");
         this.mode = this.algorithmParts[this.algorithmParts.length - 1];
@@ -63,7 +61,9 @@ class AES {
                 }
 
                 const input = createReadStream(this.inFile);
-                const output = createWriteStream(this.outFile);
+                const { name, dir, ext } = parse(this.inFile);
+                const outputFileName = join(dir, `${name}.enc${ext}`);
+                const output = createWriteStream(outputFileName);
                 pipeline(input, cipher, output, (pipelineError) => {
                     if (pipelineError) {
                         console.log(
@@ -79,6 +79,7 @@ class AES {
             });
         });
     }
+
     decrypt(callback) {
         // do the decryption on the passed file
         if (!this.validateAlgorithm()) {
@@ -103,7 +104,9 @@ class AES {
             }
 
             const input = createReadStream(this.inFile);
-            const output = createWriteStream(this.outFile);
+            const { name, dir, ext } = parse(this.inFile);
+            const outputFileName = join(dir, `${name}.dec${ext}`);
+            const output = createWriteStream(outputFileName);
             pipeline(input, decipher, output, (pipelineError) => {
                 if (pipelineError) {
                     console.log(

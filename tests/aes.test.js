@@ -36,11 +36,10 @@ describe("test encryption function", () => {
             "aes-256-ecb",
             "ahmed elsayed",
             path.join(__dirname, "../data/test.txt"),
-            path.join(__dirname, "../data/test.enc.txt"),
         );
         p.encrypt((result) => {
             expect(result).toBe(true);
-            done()
+            done();
         });
     });
 });
@@ -51,11 +50,10 @@ describe("test decryption function", () => {
             "aes-256-ecb",
             "ahmed elsayed",
             path.join(__dirname, "../data/test.enc.txt"),
-            path.join(__dirname, "../data/text.dec.txt"),
         );
         p.decrypt((result) => {
             expect(result).toBe(true);
-            done()
+            done();
         });
     });
 });
