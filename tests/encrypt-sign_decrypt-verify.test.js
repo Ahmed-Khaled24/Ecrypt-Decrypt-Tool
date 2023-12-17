@@ -6,35 +6,27 @@ const {
 } = require("../src/features/encrypt-sign_decrypt-verify");
 
 describe("Encrypt and Sign, Decrypt and Verify", () => {
-    let privateKey, publicKey, symmetricKey;
+    let privateKeyPath, publicKeyPath, symmetricKey;
     beforeAll(() => {
-        privateKey = readFileSync(
-            join(__dirname, "../default-keys/private.pem"),
-            "utf-8",
-        );
-        publicKey = readFileSync(
-            join(__dirname, "../default-keys/public.pem"),
-            "utf-8",
-        );
+        privateKeyPath = join(__dirname, "../default-keys/private.pem");
+        publicKeyPath = join(__dirname, "../default-keys/public.pem");
         symmetricKey = "I am very strong key";
     });
 
     test("Encrypt and Sign", async () => {
         const result = await encrypt_sign(
-            privateKey,
+            privateKeyPath,
             symmetricKey,
             join(__dirname, "../data/test2.txt"),
-            join(__dirname, "../data/test2.enc.txt"),
         );
         expect(result).toBe(true);
     });
 
     test("Decrypt and verify", async () => {
         const result = await decrypt_verify(
-            publicKey,
+            publicKeyPath,
             symmetricKey,
             join(__dirname, "../data/test2.enc.txt"),
-            join(__dirname, "../data/test2.dec.txt"),
         );
         expect(result).toBe(true);
     });
