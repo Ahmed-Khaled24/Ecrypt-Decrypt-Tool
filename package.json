@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "node src/index.js",
+        "start": "electron electron/main-process/index.js",
         "build": "electron-builder -w",
         "format": "prettier --write .",
         "test": "jest"
@@ -27,11 +27,11 @@
         "inquirer": "^8.0.0"
     },
     "build": {
-        "executableName" : "Advanced Security Tool",
+        "executableName": "Advanced Security Tool",
         "appId": "com.example.app",
         "extraMetadata": {
             "main": "electron/main-process/index.js"
-          }
+        }
     },
     "jest": {
         "verbose": true
