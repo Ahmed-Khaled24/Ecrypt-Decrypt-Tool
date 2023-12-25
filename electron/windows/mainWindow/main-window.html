@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./main-window.css" />
+        <link rel="stylesheet" href="./toggle.css" />
+        <title>Advanced Security Tool</title>
+    </head>
+    <body>
+        <main>
+            <section id="key-pair-generation">
+                <p>Generate a pair for rsa if you don't have one.</p>
+                <button id="key-pair-generation-btn">Generate Key pairs</button>
+            </section>
+            <section id="keys">
+                <div>
+                    <label for="private-key-input">Private Key</label>
+                    <input type="file" name="" id="private-key-input" />
+                </div>
+                <div>
+                    <label for="public-key-input">Public Key</label>
+                    <input type="file" name="" id="public-key-input" />
+                </div>
+                <div>
+                    <label for="private-key-input">Symmetric Key</label>
+                    <input type="text" name="" id="symmetric-key-input" />
+                    <button id="symmetric-key-generation-btn">Gen</button>
+                </div>
+            </section>
+
+            <div id="processing">
+                <section id="input">
+                    <!-- <label for="input-file">Input file</label> -->
+                    <input type="file" id="input-file" />
+                </section>
+                <section id="selection">
+                    <div>
+                        <select id="alg-select">
+                            <option value="aes">AES</option>
+                            <option value="rsa">RSA</option>
+                        </select>
+                    </div>
+                    <div id="sub-select-container"></div>
+                </section>
+                <section id="buttons">
+                    <button id="start-btn">Commence</button>
+                    <div id="aes-toggle">
+                        <label class="toggle" id="toggle-container">
+                            <input type="checkbox" id="check-aes" />
+                            <span class="slider"></span>
+                        </label>
+                        <p id="aes-state">ENC</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </body>
+    <script src="./main-window.js"></script>
+</html>
