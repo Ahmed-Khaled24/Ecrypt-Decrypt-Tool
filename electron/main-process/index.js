@@ -22,8 +22,8 @@ let mainWindow = null;
 
 app.on("ready", () => {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 1000,
         minWidth: 800,
         minHeight: 600,
         backgroundColor: "#212529",
@@ -38,7 +38,7 @@ app.on("ready", () => {
     );
     mainWindow.on("ready-to-show", () => {
         mainWindow.show();
-        mainWindow.webContents.openDevTools();
+        // mainWindow.webContents.openDevTools();
     });
 });
 
