@@ -6,16 +6,8 @@ const fs = require("fs");
  * @returns
  */
 function generateRsaKeyPair(filePath) {
-    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+    const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
         modulusLength: 4096,
-        publicKeyEncoding: {
-            type: 'spki',
-            format: 'pem'
-        },
-        privateKeyEncoding: {
-            type: 'pkcs8',
-            format: 'pem'
-        }
     });
     fs.writeFileSync(
         `${filePath}/private.pem`,

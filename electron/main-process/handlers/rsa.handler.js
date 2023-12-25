@@ -18,8 +18,8 @@ const { dialog } = require("electron");
  * @param {string} publicKeyPath path to the public key
  */
 async function encryptWithPublicKey(inputDataFilePath, publicKeyPath) {
-    const publicKey = fs.readFileSync(publicKeyPath);
-    const inputData = fs.readFileSync(inputDataFilePath);
+    const publicKey = fs.readFileSync(publicKeyPath, "utf8");
+    const inputData = fs.readFileSync(inputDataFilePath , "utf8");
 
     const encryptedData = encryptRSA(inputData, publicKey);
 
@@ -38,8 +38,8 @@ async function encryptWithPublicKey(inputDataFilePath, publicKeyPath) {
  * @param {string} privateKeyPath path to the private key
  */
 async function decryptWithPrivateKey(inputDataFilePath, privateKeyPath) {
-    const privateKey = fs.readFileSync(privateKeyPath);
-    const inputData = fs.readFileSync(inputDataFilePath);
+    const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+    const inputData = fs.readFileSync(inputDataFilePath , "utf8");
 
     const decryptedData = decryptRSA(inputData, privateKey);
 
