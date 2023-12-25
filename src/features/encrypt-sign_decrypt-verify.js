@@ -47,7 +47,7 @@ async function encrypt_sign(privateKeyPath, symmetricKey, sourcePath) {
  * @param {string} symmetricKey key to the aes algorithm
  * @param {string} sourcePath absolute path to the file that you want to decrypt and verify
  */
-async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath) {
+async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath, destinationPath) {
     const publicKey = readFileSync(publicKeyPath);
     return new Promise((resolve, reject) => {
         const aes = new AES("aes-256-ecb", symmetricKey, sourcePath);
@@ -68,7 +68,7 @@ async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath) {
 
             if (validSignature) {
                 console.log("Your file signature is valid.");
-                await writeFile(targetPath, actualData, { flag: "w" });
+                await writeFile(destinationPath, actualData, { flag: "w" });
                 resolve(true);
             } else {
                 reject("Your file signature is invalid.");
