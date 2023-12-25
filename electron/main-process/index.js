@@ -76,35 +76,35 @@ ipcMain.on("command", async (event, command, data) => {
                 console.log("from rsa");
                 console.log(data);
                 switch (data.selectedStrategy) {
-                    case "encrypt with public key": {
+                    case "Encrypt with public key": {
                         handlers.rsa.encryptWithPublicKey(
                             data.inputFilePath,
                             data.publicKeyFilePath,
                         );
                         break;
                     }
-                    case "decrypt with private key": {
+                    case "Decrypt with private key": {
                         handlers.rsa.decryptWithPrivateKey(
                             data.inputFilePath,
                             data.privateKeyFilePath,
                         );
                         break;
                     }
-                    case "sign with private key": {
+                    case "Sign with private key": {
                         handlers.rsa.signWithPrivateKey(
                             data.inputFilePath,
                             data.privateKeyFilePath,
                         );
                         break;
                     }
-                    case "verify with public key": {
+                    case "Verify with public key": {
                         await handlers.rsa.verifyWithPublicKey(
                             data.inputFilePath,
                             data.publicKeyFilePath,
                         );
                         break;
                     }
-                    case "hash-sign-encAes": {
+                    case "Encrypt and sign": {
                         await handlers.rsa.hashSignEncrypt(
                             data.inputFilePath,
                             data.privateKeyFilePath,
@@ -112,7 +112,7 @@ ipcMain.on("command", async (event, command, data) => {
                         );
                         break;
                     }
-                    case "decAes-verify-compare": {
+                    case "Decrypt and verify": {
                         await handlers.rsa.decryptVerifyCompare(
                             data.inputFilePath,
                             data.publicKeyFilePath,

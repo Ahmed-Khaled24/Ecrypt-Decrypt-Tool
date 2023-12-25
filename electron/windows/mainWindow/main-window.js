@@ -34,12 +34,12 @@ const aesOptions = [
 ];
 
 const rsaOptions = [
-    "encrypt with public key",
-    "decrypt with private key",
-    "sign with private key",
-    "verify with public key",
-    "hash-sign-encAes",
-    "decAes-verify-compare",
+    "Encrypt with public key",
+    "Decrypt with private key",
+    "Sign with private key",
+    "Verify with public key",
+    "Encrypt and sign",
+    "Decrypt and verify",
 ];
 
 function sendError(error) {
