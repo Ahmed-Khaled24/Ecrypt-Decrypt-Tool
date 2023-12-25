@@ -21,7 +21,8 @@ class AES {
      * @param {*} mode aes mode such as cbc , ecb , ....
      * @memberof AES
      */
-    constructor(algorithm, password, inFile) {
+    constructor(algorithm, password, inFile, outputFilePath) {
+        this.outputFilePath = outputFilePath;
         this.algorithm = algorithm;
         this.password = password;
         this.inFile = inFile;
@@ -62,8 +63,8 @@ class AES {
 
                 const input = createReadStream(this.inFile);
                 const { name, dir, ext } = parse(this.inFile);
-                const outputFileName = join(dir, `${name}.enc${ext}`);
-                const output = createWriteStream(outputFileName);
+                if(!this.outputFilePath) this.outputFilePath = join(dir, `${name}.enc${ext}`);
+                const output = createWriteStream(this.outputFilePath);
                 pipeline(input, cipher, output, (pipelineError) => {
                     if (pipelineError) {
                         console.log(
@@ -105,8 +106,8 @@ class AES {
 
             const input = createReadStream(this.inFile);
             const { name, dir, ext } = parse(this.inFile);
-            const outputFileName = join(dir, `${name}.dec${ext}`);
-            const output = createWriteStream(outputFileName);
+            if(!this.outputFilePath) this.outputFilePath = join(dir, `${name}.dec${ext}`);
+            const output = createWriteStream(this.outputFilePath);
             pipeline(input, decipher, output, (pipelineError) => {
                 if (pipelineError) {
                     console.log(
