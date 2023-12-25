@@ -10,7 +10,12 @@ const AES = require("./aes");
  * @param {string} symmetricKey key to the aes algorithm
  * @param {string} sourcePath absolute path to the file that you want to encrypt and sign
  */
-async function encrypt_sign(privateKeyPath, symmetricKey, sourcePath) {
+async function encrypt_sign(
+    privateKeyPath,
+    symmetricKey,
+    sourcePath,
+    outputFilePath,
+) {
     const privateKey = readFileSync(privateKeyPath);
     return new Promise(async (resolve, reject) => {
         const fileData = await readFile(sourcePath, "binary");
@@ -28,7 +33,12 @@ async function encrypt_sign(privateKeyPath, symmetricKey, sourcePath) {
             encoding: "binary",
         });
 
-        const aes = new AES("aes-256-ecb", symmetricKey, sourcePath);
+        const aes = new AES(
+            "aes-256-ecb",
+            symmetricKey,
+            sourcePath,
+            outputFilePath,
+        );
 
         aes.encrypt(async (resultBoolean) => {
             if (resultBoolean) {
@@ -47,10 +57,20 @@ async function encrypt_sign(privateKeyPath, symmetricKey, sourcePath) {
  * @param {string} symmetricKey key to the aes algorithm
  * @param {string} sourcePath absolute path to the file that you want to decrypt and verify
  */
-async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath, destinationPath) {
+async function decrypt_verify(
+    publicKeyPath,
+    symmetricKey,
+    sourcePath,
+    outputFilePath,
+) {
     const publicKey = readFileSync(publicKeyPath);
     return new Promise((resolve, reject) => {
-        const aes = new AES("aes-256-ecb", symmetricKey, sourcePath);
+        const aes = new AES(
+            "aes-256-ecb",
+            symmetricKey,
+            sourcePath,
+            outputFilePath,
+        );
         aes.decrypt(async (resultBoolean) => {
             console.log(
                 resultBoolean
@@ -58,8 +78,13 @@ async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath, destinati
                     : reject("The code has been exploded"),
             );
 
-            const targetPath = sourcePath.replace(".txt", ".dec.txt");
+            const targetPath =
+                outputFilePath ?? sourcePath.replace(".txt", ".dec.txt");
+                
+            console.log(targetPath);
+            
             const fileData = await readFile(targetPath, "binary");
+
             let [actualData, signature] = fileData.split("\n#SIGNATURE#");
 
             const fileHash = generateHash(actualData);
@@ -68,7 +93,7 @@ async function decrypt_verify(publicKeyPath, symmetricKey, sourcePath, destinati
 
             if (validSignature) {
                 console.log("Your file signature is valid.");
-                await writeFile(destinationPath, actualData, { flag: "w" });
+                await writeFile(outputFilePath, actualData, { flag: "w" });
                 resolve(true);
             } else {
                 reject("Your file signature is invalid.");

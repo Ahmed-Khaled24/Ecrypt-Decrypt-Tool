@@ -8,18 +8,14 @@ const { message, error } = require("../../utils/message.dialogs");
 const { encryptRSA, decryptRSA } = require("../../../src/features/enc_dec_rsa");
 const { dialog } = require("electron");
 
-
-
-
-
 /**
- * 
+ *
  * @param {string} inputDataFilePath path to the file that you want to encrypt
  * @param {string} publicKeyPath path to the public key
  */
 async function encryptWithPublicKey(inputDataFilePath, publicKeyPath) {
     const publicKey = fs.readFileSync(publicKeyPath, "utf8");
-    const inputData = fs.readFileSync(inputDataFilePath , "utf8");
+    const inputData = fs.readFileSync(inputDataFilePath, "utf8");
 
     const encryptedData = encryptRSA(inputData, publicKey);
 
@@ -33,13 +29,13 @@ async function encryptWithPublicKey(inputDataFilePath, publicKeyPath) {
 }
 
 /**
- * 
+ *
  * @param {string} inputDataFilePath path to the file that you want to decrypt
  * @param {string} privateKeyPath path to the private key
  */
 async function decryptWithPrivateKey(inputDataFilePath, privateKeyPath) {
     const privateKey = fs.readFileSync(privateKeyPath, "utf8");
-    const inputData = fs.readFileSync(inputDataFilePath , "utf8");
+    const inputData = fs.readFileSync(inputDataFilePath, "utf8");
 
     const decryptedData = decryptRSA(inputData, privateKey);
 
@@ -51,8 +47,6 @@ async function decryptWithPrivateKey(inputDataFilePath, privateKeyPath) {
         }
     });
 }
-
-
 
 /**
  *
@@ -83,7 +77,7 @@ async function verifyWithPublicKey(signedDataFilePath, publicKeyPath) {
     const signedData = fs.readFileSync(signedDataFilePath);
     const publicKey = fs.readFileSync(publicKeyPath);
 
-    const fileData =  fs.readFileSync(signedDataFilePath, "binary");
+    const fileData = fs.readFileSync(signedDataFilePath, "binary");
     let [actualData, signature] = fileData.split("\n#SIGNATURE#");
 
     const validSignature = verify(actualData, publicKey, signature);
@@ -105,7 +99,17 @@ async function hashSignEncrypt(
     privateKeyPath,
     symmetricKey,
 ) {
-    await encrypt_sign(privateKeyPath, symmetricKey, inputDataFilePath);
+    const { canceled, filePath: outputFilePath } =
+        await dialog.showSaveDialog();
+    if (canceled) {
+        return;
+    }
+    await encrypt_sign(
+        privateKeyPath,
+        symmetricKey,
+        inputDataFilePath,
+        outputFilePath,
+    );
     message("Success", "File signed and encrypted successfully!");
 }
 
@@ -114,11 +118,8 @@ async function decryptVerifyCompare(
     publicKeyPath,
     symmetricKey,
 ) {
-    const inputFileName = inputDataFilePath.split("\\").pop();
-
     dialog.showSaveDialog({ properties: ["createFile"] }).then((result) => {
         if (!result.canceled) {
-            console.log({ result });
             const destinationPath = result.filePath;
             console.log(destinationPath);
             decrypt_verify(
@@ -128,10 +129,12 @@ async function decryptVerifyCompare(
                 destinationPath,
             ).then((result) => {
                 if (result) {
-                    message("Success", "File decrypted and verified successfully!");
+                    message(
+                        "Success",
+                        "File decrypted and verified successfully!",
+                    );
                 }
             });
-            // fs.writeFileSync(`${directoryPath}/${inputFileName}-signed.txt`, signedData);
         }
     });
 }
